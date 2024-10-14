@@ -22,9 +22,7 @@
       <!-- Password Input Field -->
       <v-text-field
         v-model="password"
-        :type="showPassword ? 'text' : 'password'"
-        :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-        @click:append="togglePasswordVisibility"
+        type="password"
         label="Password*"
         outlined
         class="mb-4"
@@ -46,11 +44,18 @@
       <v-row justify="center" class="mt-4">
         <p>Don't have an account? <a href="#" @click="goToSignUp" class="text-decoration-none text-brown" style="cursor: pointer;">Sign Up</a></p>
       </v-row>
+
+      <!-- Error Alert -->
+      <v-alert v-if="loginError" type="error" dismissible class="mt-4">
+        {{ loginError }}
+      </v-alert>
     </v-card>
   </v-container>
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: 'Login',
   data() {
@@ -59,29 +64,54 @@ export default {
       password: '',
       emailErrors: [],
       passwordErrors: [],
-      showPassword: false
+      loginError: null,
     };
   },
   methods: {
-    togglePasswordVisibility() {
-      this.showPassword = !this.showPassword;
-    },
-    validateCredentials() {
+    async validateCredentials() {
       this.emailErrors = [];
       this.passwordErrors = [];
-      if (this.email !== 'true@email') {
+      this.loginError = null;
+
+      if (!this.email) {
         this.emailErrors.push('Please enter a valid email address.');
-      } else if (this.password !== 'true@password') {
-        this.passwordErrors.push('Password error');
-      } else {
-        this.$router.push('/home'); // Navigate to the home page
+      }
+      if (!this.password) {
+        this.passwordErrors.push('Password cannot be empty.');
+      }
+
+      if (this.emailErrors.length === 0 && this.passwordErrors.length === 0) {
+        try {
+          const response = await axios.post('http://127.0.0.1:8000/dj-rest-auth/login/', {
+            username: this.email,
+            password: this.password,
+          });
+          console.log('Login successful!', response.data);
+          this.$router.push('/home'); 
+        } catch (error) {
+          if (error.response) {
+
+            const errorData = error.response.data;
+            if (errorData.non_field_errors) {
+              this.loginError = errorData.non_field_errors[0]; 
+            } else if (errorData.username) {
+              this.emailErrors.push(errorData.username[0]); 
+            } else if (errorData.password) {
+              this.passwordErrors.push(errorData.password[0]); 
+            } else {
+              this.loginError = 'Login failed. Please try again.'; 
+            }
+          } else {
+            this.loginError = 'Unable to connect to the server. Please try again later.';
+          }
+        }
       }
     },
     goToSignUp() {
       this.$router.push('/sign-up');
     },
     skipLogin() {
-      this.$router.push('/home'); // Direct navigation for development/testing
+      this.$router.push('/home'); 
     }
   }
 };
@@ -97,6 +127,6 @@ export default {
 }
 
 .text-brown {
-  color: #8B4513; /* Adjust this color as needed */
+  color: #8B4513; 
 }
 </style>

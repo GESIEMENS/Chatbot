@@ -1,81 +1,87 @@
 <template>
   <v-container class="d-flex align-center justify-center fill-height">
-    <v-card class="pa-10" width="400" elevation="2">
-      <!-- Top icon -->
-      <v-row justify="center" class="mb-8">
-        <v-icon size="56px">mdi-account-circle</v-icon>
+    <v-card class="pa-10 card-size" elevation="2">
+      <v-row justify="center" class="mb-6">
+        <v-col cols="12" class="text-center">
+          <v-icon size="56px" class="text-brown">mdi-account-circle</v-icon>
+          <h2 class="text-brown">Register</h2>
+        </v-col>
       </v-row>
 
-      <!-- Create Account message -->
-      <v-row justify="center" class="mb-8">
-        <h2 class="text-center">Create An Account</h2>
-      </v-row>
+      <v-form>
+        <v-text-field
+          label="Email"
+          v-model="email"
+          outlined
+          dense
+          class="mb-3"
+        />
+        <v-text-field
+          label="Username"
+          v-model="username"
+          outlined
+          dense
+          class="mb-3"
+        />
+        <v-text-field
+          label="Password"
+          v-model="password"
+          type="password"
+          outlined
+          dense
+          class="mb-3"
+        />
+        <v-select
+          :items="userGroups"
+          label="User Group"
+          v-model="userGroup"
+          outlined
+          dense
+          class="mb-3"
+        />
+        <v-btn block color="brown" class="white--text mb-3" @click="register">
+          Register
+        </v-btn>
+      </v-form>
 
-      <!-- Email input field -->
-      <v-text-field
-        v-model="email"
-        :error-messages="emailErrors"
-        label="Email Address*"
-        outlined
-        class="mb-4"
-        color="brown"
-      ></v-text-field>
-
-      <!-- Password input field -->
-      <v-text-field
-        v-model="password"
-        :error-messages="passwordErrors"
-        label="Password*"
-        :type="showPassword ? 'text' : 'password'"
-        :append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
-        @click:append="togglePasswordVisibility"
-        outlined
-        class="mb-4"
-        color="brown"
-      ></v-text-field>
-
-      <!-- Continue button -->
-      <v-btn block color="brown" class="white--text mb-6" @click="validateCredentials">
-        Continue
-      </v-btn>
-
-      <!-- Log In prompt -->
-      <v-row justify="center" class="mt-4">
-        <p>Already have an account? <a @click="goToLogin" class="text-decoration-none text-brown" style="cursor: pointer;">Log In</a></p>
-      </v-row>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <span>Already have an account? </span>
+        <router-link to="/login" class="text-decoration-none text-brown">Login</router-link>
+      </v-card-actions>
     </v-card>
   </v-container>
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
-  name: 'SignUp',
   data() {
     return {
       email: '',
+      username: '',
       password: '',
-      emailErrors: [],
-      passwordErrors: [],
-      showPassword: false
+      userGroup: '',
+      userGroups: ['STUDENT', 'STAFF', 'ADMIN']
     };
   },
   methods: {
-    validateCredentials() {
-      this.emailErrors = [];
-      this.passwordErrors = [];
-      if (this.email !== 'true@email') {
-        this.emailErrors.push('Please enter a valid email address.');
-      } else if (this.password !== 'true@password') {
-        this.passwordErrors.push('Password error');
-      } else {
-        this.$router.push('/home'); // Navigate to the home page if both are correct
-      }
-    },
-    goToLogin() {
-      this.$router.push('/login');
-    },
-    togglePasswordVisibility() {
-      this.showPassword = !this.showPassword;
+    register() {
+      const userData = {
+        email: this.email,
+        username: this.username,
+        userGroup: this.userGroup,
+        password: this.password,
+      };
+      axios.post('http://127.0.0.1:8000/api/register/', userData)
+        .then(response => {
+          alert('Registration successful');
+          this.$router.push('/login');
+        })
+        .catch(error => {
+          alert('Registration failed. Please try again.');
+        });
     }
   }
 };
@@ -86,17 +92,30 @@ export default {
   min-height: 100vh;
 }
 
-.text-center {
-  font-weight: bold;
-  font-size: 24px;
+.text-decoration-none {
+  text-decoration: none;
 }
 
 .text-brown {
   color: #8B4513;
 }
 
-.text-decoration-none {
-  text-decoration: none;
-  cursor: pointer; /* Ensures cursor changes to pointer on hover over text */
+.v-btn {
+  background-color: #8B4513 !important;
+  color: white !important;
+}
+
+.v-card {
+  border-radius: 12px;
+  background-color: white;
+}
+
+.v-icon {
+  color: #8B4513;
+}
+
+.card-size {
+  width: 400px;
+  max-width: 100%;
 }
 </style>

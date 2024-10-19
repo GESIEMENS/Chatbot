@@ -1,121 +1,198 @@
 <template>
-  <v-container class="d-flex align-center justify-center fill-height">
-    <v-card class="pa-10 card-size" elevation="2">
-      <v-row justify="center" class="mb-6">
-        <v-col cols="12" class="text-center">
-          <v-icon size="56px" class="text-brown">mdi-account-circle</v-icon>
-          <h2 class="text-brown">Register</h2>
-        </v-col>
-      </v-row>
+  <div class="signup-container">
+    <div class="form-wrapper">
+      <h1 class="signup-title">Create Your Account</h1>
 
-      <v-form>
-        <v-text-field
-          label="Email"
-          v-model="email"
-          outlined
-          dense
-          class="mb-3"
-        />
-        <v-text-field
-          label="Username"
-          v-model="username"
-          outlined
-          dense
-          class="mb-3"
-        />
-        <v-text-field
-          label="Password"
-          v-model="password"
-          type="password"
-          outlined
-          dense
-          class="mb-3"
-        />
-        <v-select
-          :items="userGroups"
-          label="User Group"
-          v-model="userGroup"
-          outlined
-          dense
-          class="mb-3"
-        />
-        <v-btn block color="brown" class="white--text mb-3" @click="register">
-          Register
-        </v-btn>
-      </v-form>
+      <form @submit.prevent="handleSubmit">
+        <div class="form-group">
+          <label for="email" class="form-label">Email</label>
+          <input
+            v-model="formData.email"
+            type="email"
+            id="email"
+            class="form-input"
+            placeholder="Enter your email"
+            required
+          />
+        </div>
 
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <span>Already have an account? </span>
-        <router-link to="/login" class="text-decoration-none text-brown">Login</router-link>
-      </v-card-actions>
-    </v-card>
-  </v-container>
+        <div class="form-group">
+          <label for="username" class="form-label">Username</label>
+          <input
+            v-model="formData.username"
+            type="text"
+            id="username"
+            class="form-input"
+            placeholder="Enter your username"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input
+            v-model="formData.password"
+            type="password"
+            id="password"
+            class="form-input"
+            placeholder="Enter your password"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="userGroup">User Group</label>
+          <select v-model="formData.userGroup" id="userGroup" class="form-input" required>
+            <option value="ADMIN">Admin</option>
+            <option value="STAFF">Staff</option>
+            <option value="STUDENT">Student</option>
+          </select>
+        </div>
+
+        <button type="submit" class="submit-btn">Sign Up</button>
+      </form>
+
+      <!-- Add login link below the form -->
+      <div class="login-link">
+        <p>Already have an account?
+          <router-link to="/login" class="login-text">Login</router-link>
+        </p>
+      </div>
+
+      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+    </div>
+  </div>
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 
 export default {
   data() {
     return {
-      email: '',
-      username: '',
-      password: '',
-      userGroup: '',
-      userGroups: ['STUDENT', 'STAFF', 'ADMIN']
+      formData: {
+        email: "",
+        username: "",
+        password: "",
+        userGroup: "STUDENT", // Default value
+      },
+      errorMessage: "",
     };
   },
   methods: {
-    register() {
-      const userData = {
-        email: this.email,
-        username: this.username,
-        userGroup: this.userGroup,
-        password: this.password,
-      };
-      axios.post('http://127.0.0.1:8000/api/register/', userData)
-        .then(response => {
-          alert('Registration successful');
-          this.$router.push('/login');
-        })
-        .catch(error => {
-          alert('Registration failed. Please try again.');
+    async handleSubmit() {
+      try {
+        const response = await axios.post("http://127.0.0.1:8000/api/register/", {
+          email: this.formData.email,
+          username: this.formData.username,
+          password: this.formData.password,
+          userGroup: this.formData.userGroup,
         });
-    }
-  }
+
+        if (response.status === 201) {
+          // Success handling (e.g., redirect or success message)
+          console.log("User registered successfully");
+        }
+      } catch (error) {
+        this.errorMessage = "Failed to register. Please try again.";
+        console.error(error);
+      }
+    },
+  },
 };
 </script>
 
 <style scoped>
-.fill-height {
+/* General Layout */
+.signup-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   min-height: 100vh;
+  background-color: #f0f4f8; /* Soft blue-grey background */
 }
 
-.text-decoration-none {
-  text-decoration: none;
-}
-
-.text-brown {
-  color: #8B4513;
-}
-
-.v-btn {
-  background-color: #8B4513 !important;
-  color: white !important;
-}
-
-.v-card {
+.form-wrapper {
+  background-color: #ffffff; /* White card */
+  padding: 40px;
   border-radius: 12px;
-  background-color: white;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
 }
 
-.v-icon {
-  color: #8B4513;
+/* Title */
+.signup-title {
+  text-align: center;
+  font-size: 1.8rem;
+  color: #333; /* Dark text */
+  margin-bottom: 20px;
 }
 
-.card-size {
-  width: 400px;
-  max-width: 100%;
+/* Form Group */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  font-weight: 500;
+  color: #555; /* Slightly muted label */
+  margin-bottom: 8px;
+  display: block;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.form-input:focus {
+  border-color: #007bff; /* Blue highlight on focus */
+  outline: none;
+}
+
+/* Submit Button */
+.submit-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #007bff; /* Primary blue */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.submit-btn:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Login link below the form */
+.login-link {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.login-text {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.login-text:hover {
+  text-decoration: underline;
+}
+
+/* Error Message */
+.error-message {
+  color: red;
+  margin-top: 20px;
+  text-align: center;
+  font-size: 0.9rem;
 }
 </style>

@@ -1,132 +1,195 @@
 <template>
-  <v-container class="d-flex align-center justify-center fill-height">
-    <v-card class="pa-10" width="400" elevation="2">
-      <!-- Welcome Message and Icon -->
-      <v-row justify="center" class="mb-8">
-        <v-col cols="12" class="text-center">
-          <v-icon size="56px">mdi-account-circle</v-icon>
-          <h2>Welcome Back</h2>
-        </v-col>
-      </v-row>
+  <div class="login-container">
+    <div class="form-wrapper">
+      <h1 class="login-title">Login to Your Account</h1>
 
-      <!-- Email Input Field -->
-      <v-text-field
-        v-model="email"
-        :error-messages="emailErrors"
-        label="Email Address*"
-        outlined
-        class="mb-4"
-        @keydown.enter="validateCredentials"
-      ></v-text-field>
+      <form @submit.prevent="handleLogin">
+        <div class="form-group">
+          <label for="username" class="form-label">Username</label>
+          <input
+            v-model="formData.username"
+            type="text"
+            id="username"
+            class="form-input"
+            placeholder="Enter your username"
+            required
+          />
+        </div>
 
-      <!-- Password Input Field -->
-      <v-text-field
-        v-model="password"
-        type="password"
-        label="Password*"
-        outlined
-        class="mb-4"
-        :error-messages="passwordErrors"
-        @keydown.enter="validateCredentials"
-      ></v-text-field>
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <input
+            v-model="formData.password"
+            type="password"
+            id="password"
+            class="form-input"
+            placeholder="Enter your password"
+            required
+          />
+        </div>
 
-      <!-- Continue Button -->
-      <v-btn block color="brown" class="white--text mb-2" @click="validateCredentials">
-        Continue
-      </v-btn>
+        <button type="submit" class="submit-btn">Login</button>
+      </form>
 
-      <!-- Skip Login Button for Development/Testing -->
-      <v-btn block color="grey" class="white--text mb-6" @click="skipLogin">
-        Skip Login (Dev)
-      </v-btn>
+      <!-- Error message -->
+      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
 
-      <!-- Sign-up Prompt -->
-      <v-row justify="center" class="mt-4">
-        <p>Don't have an account? <a href="#" @click="goToSignUp" class="text-decoration-none text-brown" style="cursor: pointer;">Sign Up</a></p>
-      </v-row>
-
-      <!-- Error Alert -->
-      <v-alert v-if="loginError" type="error" dismissible class="mt-4">
-        {{ loginError }}
-      </v-alert>
-    </v-card>
-  </v-container>
+      <!-- Signup link -->
+      <div class="link-section">
+        <p>Don't have an account?
+          <router-link to="/signup" class="signup-text">Sign Up</router-link>
+        </p>
+        <p>
+          <button @click="skipLogin" class="skip-btn-link">Continue as Guest</button>
+        </p>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 
 export default {
-  name: 'Login',
   data() {
     return {
-      email: '',
-      password: '',
-      emailErrors: [],
-      passwordErrors: [],
-      loginError: null,
+      formData: {
+        username: "",
+        password: "",
+      },
+      errorMessage: "",
     };
   },
   methods: {
-    async validateCredentials() {
-      this.emailErrors = [];
-      this.passwordErrors = [];
-      this.loginError = null;
+    async handleLogin() {
+      try {
+        const response = await axios.post("http://127.0.0.1:8000/api/login/", {
+          username: this.formData.username,
+          password: this.formData.password,
+        });
 
-      if (!this.email) {
-        this.emailErrors.push('Please enter a valid email address.');
-      }
-      if (!this.password) {
-        this.passwordErrors.push('Password cannot be empty.');
-      }
-
-      if (this.emailErrors.length === 0 && this.passwordErrors.length === 0) {
-        try {
-          const response = await axios.post('http://127.0.0.1:8000/dj-rest-auth/login/', {
-            username: this.email,
-            password: this.password,
-          });
-          console.log('Login successful!', response.data);
-          this.$router.push('/home'); 
-        } catch (error) {
-          if (error.response) {
-
-            const errorData = error.response.data;
-            if (errorData.non_field_errors) {
-              this.loginError = errorData.non_field_errors[0]; 
-            } else if (errorData.username) {
-              this.emailErrors.push(errorData.username[0]); 
-            } else if (errorData.password) {
-              this.passwordErrors.push(errorData.password[0]); 
-            } else {
-              this.loginError = 'Login failed. Please try again.'; 
-            }
-          } else {
-            this.loginError = 'Unable to connect to the server. Please try again later.';
-          }
+        if (response.status === 200) {
+          const userData = response.data;
+          // Redirect based on login success
+          this.$router.push('/dashboard');
         }
+      } catch (error) {
+        this.errorMessage = "Invalid login credentials. Please try again.";
+        console.error(error);
       }
-    },
-    goToSignUp() {
-      this.$router.push('/sign-up');
     },
     skipLogin() {
-      this.$router.push('/home'); 
-    }
-  }
+      // Redirect to guest dashboard
+      this.$router.push('/guest-dashboard');
+    },
+  },
 };
 </script>
 
 <style scoped>
-.fill-height {
+/* General Layout */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   min-height: 100vh;
+  background-color: #f0f4f8; /* Soft blue-grey background */
 }
 
-.text-decoration-none {
+.form-wrapper {
+  background-color: #ffffff; /* White card */
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Title */
+.login-title {
+  text-align: center;
+  font-size: 1.8rem;
+  color: #333; /* Dark text */
+  margin-bottom: 20px;
+}
+
+/* Form Group */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  font-weight: 500;
+  color: #555; /* Slightly muted label */
+  margin-bottom: 8px;
+  display: block;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.form-input:focus {
+  border-color: #007bff; /* Blue highlight on focus */
+  outline: none;
+}
+
+/* Submit Button */
+.submit-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #007bff; /* Primary blue */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.submit-btn:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Links Section (Sign Up and Guest) */
+.link-section {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.signup-text {
+  color: #007bff;
   text-decoration: none;
+  font-weight: bold;
 }
 
-.text-brown {
-  color: #8B4513; 
+.signup-text:hover {
+  text-decoration: underline;
+}
+
+.skip-btn-link {
+  background: none;
+  border: none;
+  color: #6c757d;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.skip-btn-link:hover {
+  color: #5a6268;
+  text-decoration: underline;
+}
+
+/* Error Message */
+.error-message {
+  color: red;
+  margin-top: 20px;
+  text-align: center;
+  font-size: 0.9rem;
 }
 </style>

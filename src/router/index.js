@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Login from '../pages/Login.vue';
-import SignUp from '../pages/SignUp.vue';
-import Home from '../pages/Home.vue'; // Import Home component
+import SignUp from '@/pages/SignUp.vue';
+import Home from '../pages/Home.vue'; 
+import GuestDashboard from '@/pages/GuestDashboard.vue';
 
 const routes = [
   {
@@ -10,18 +11,14 @@ const routes = [
     component: Login,
   },
   {
-    path: '/sign-up',
+    path: '/signup',  
     name: 'SignUp',
-    component: SignUp,
+    component: SignUp, 
   },
   {
-    path: '/home',
-    name: 'Home',
-    component: Home,
-  },
-  {
-    path: '/',
-    redirect: '/login'  // Default to login
+    path: '/guest-dashboard',  
+    name: 'GuestDashboard',
+    component: GuestDashboard,  
   },
 ];
 

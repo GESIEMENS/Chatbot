@@ -42,17 +42,20 @@
 
         <div class="form-group">
           <label for="userGroup">User Group</label>
-          <select v-model="formData.userGroup" id="userGroup" class="form-input" required>
-            <option value="ADMIN">Admin</option>
-            <option value="STAFF">Staff</option>
-            <option value="STUDENT">Student</option>
-          </select>
+          <div class="select-wrapper">
+            <select v-model="formData.userGroup" id="userGroup" class="form-input" required>
+              <option value="" disabled>Select your role</option>
+              <option value="ADMIN">Admin</option>
+              <option value="STAFF">Staff</option>
+              <option value="STUDENT">Student</option>
+            </select>
+            <i class="fas fa-chevron-down select-arrow"></i> 
+          </div>
         </div>
 
         <button type="submit" class="submit-btn">Sign Up</button>
       </form>
 
-      <!-- Add login link below the form -->
       <div class="login-link">
         <p>Already have an account?
           <router-link to="/login" class="login-text">Login</router-link>
@@ -74,13 +77,17 @@ export default {
         email: "",
         username: "",
         password: "",
-        userGroup: "STUDENT", // Default value
+        userGroup: "", // Default is empty to force selection
       },
       errorMessage: "",
     };
   },
   methods: {
     async handleSubmit() {
+      if (!this.formData.userGroup) {
+        this.errorMessage = "Please select a user group!";
+        return;
+      }
       try {
         const response = await axios.post("http://127.0.0.1:8000/api/register/", {
           email: this.formData.email,
@@ -90,7 +97,6 @@ export default {
         });
 
         if (response.status === 201) {
-          // Success handling (e.g., redirect or success message)
           console.log("User registered successfully");
         }
       } catch (error) {
@@ -101,6 +107,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 /* General Layout */
@@ -194,5 +201,23 @@ export default {
   margin-top: 20px;
   text-align: center;
   font-size: 0.9rem;
+}
+
+.select-wrapper {
+  position: relative;
+}
+
+.select-arrow {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none; 
+  color: #555; 
+}
+
+select {
+  appearance: none;
+  padding-right: 30px;
 }
 </style>

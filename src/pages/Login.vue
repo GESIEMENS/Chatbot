@@ -34,7 +34,7 @@
       <!-- Error message -->
       <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
 
-      <!-- Signup link -->
+      <!-- Signup link and continue as guest -->
       <div class="link-section">
         <p>Don't have an account?
           <router-link to="/signup" class="signup-text">Sign Up</router-link>
@@ -61,6 +61,7 @@ export default {
     };
   },
   methods: {
+    // For registered users (Student, Admin, Staff)
     async handleLogin() {
       try {
         const response = await axios.post("http://127.0.0.1:8000/api/login/", {
@@ -70,18 +71,26 @@ export default {
 
         if (response.status === 200) {
           const userData = response.data;
-          // Redirect based on login success
-          this.$router.push('/dashboard');
+
+          // Redirect based on userGroup (Student, Admin, Staff)
+          if (userData.userGroup === 'STUDENT') {
+            this.$router.push('/student-dashboard');
+          } else if (userData.userGroup === 'ADMIN') {
+            this.$router.push('/admin-dashboard');
+          } else if (userData.userGroup === 'STAFF') {
+            this.$router.push('/staff-dashboard');
+          }
         }
       } catch (error) {
-        this.errorMessage = "Invalid login credentials. Please try again.";
+        this.errorMessage = "Login failed. Please check your credentials and try again.";
         console.error(error);
       }
     },
+
+    // Guest users bypass login
     skipLogin() {
-      // Redirect to guest dashboard
       this.$router.push('/guest-dashboard');
-    },
+    }
   },
 };
 </script>

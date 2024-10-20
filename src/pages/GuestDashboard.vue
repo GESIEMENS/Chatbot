@@ -3,7 +3,7 @@
       <!-- Top Bar (Fixed) -->
       <header class="top-bar">
         <div class="logo">
-          <h1>USYD Virtual Policy Assistant</h1>
+          <h1>USYD Virtual Assistant</h1>
         </div>
         <div class="auth-links">
           <router-link to="/login" class="auth-btn">Login</router-link>

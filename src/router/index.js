@@ -7,6 +7,9 @@ import WelcomePage from '@/pages/WelcomePage.vue';
 import MyProfile from '@/pages/MyProfile.vue';
 import BookingPage from '@/pages/BookingPage.vue';
 import UnitSelectionPage from '@/pages/UnitSelectionPage.vue';
+import Dashboard from '@/pages/Dashboard.vue';
+import AccountManagement from '@/pages/AccountManagement.vue';
+
 
 const routes = [
   {
@@ -31,8 +34,18 @@ const routes = [
   },
   {
     path: '/student-dashboard',
-    name: 'StudentDashboard',
-    component: StudentDashboard,
+    component: Dashboard,
+    props: { role: 'STUDENT' }
+  },
+  {
+    path: '/admin-dashboard',
+    component: Dashboard,
+    props: { role: 'ADMIN' }
+  },
+  {
+    path: '/staff-dashboard',
+    component: Dashboard,
+    props: { role: 'STAFF' }
   },
   {
     path: '/profile',
@@ -48,7 +61,12 @@ const routes = [
     path: '/unit-selection',
     name: 'UnitSelectionPage',
     component: UnitSelectionPage,
-  },    
+  }, 
+  {
+    path: '/account-management',
+    name: 'AccountManagement',
+    component: AccountManagement, 
+  },   
 ];
 
 const router = createRouter({

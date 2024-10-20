@@ -6,7 +6,7 @@
         <div class="popup-buttons">
           <button @click="navigateToLogin" class="popup-btn">Log in</button>
           <button @click="navigateToSignUp" class="popup-btn">Sign up</button>
-          <button @click="stayLoggedOut" class="stay-logged-out">Stay logged out</button>
+          <button @click="stayLoggedOut" class="stay-logged-out">Continue as Guest</button>
         </div>
       </div>
     </div>

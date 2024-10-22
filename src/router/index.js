@@ -9,7 +9,9 @@ import BookingPage from '@/pages/BookingPage.vue';
 import UnitSelectionPage from '@/pages/UnitSelectionPage.vue';
 import Dashboard from '@/pages/Dashboard.vue';
 import AccountManagement from '@/pages/AccountManagement.vue';
-
+import Policies from '@/pages/Policies.vue';
+import Reporting from '@/pages/Reporting.vue';
+import BookingManagement from '@/pages/BookingManagement.vue';
 
 const routes = [
   {
@@ -58,6 +60,11 @@ const routes = [
     component: BookingPage,
   },
   {
+    path: '/booking-management',
+    name: 'BookingManagement',
+    component: BookingManagement,
+  },
+  {
     path: '/unit-selection',
     name: 'UnitSelectionPage',
     component: UnitSelectionPage,
@@ -67,6 +74,16 @@ const routes = [
     name: 'AccountManagement',
     component: AccountManagement, 
   },   
+  {
+    path: '/policies',
+    name: 'Policies',
+    component: Policies, 
+  },  
+  {
+    path: '/reporting',
+    name: 'Reporting',
+    component: Reporting, 
+  },
 ];
 
 const router = createRouter({

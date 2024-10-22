@@ -16,16 +16,23 @@
       <aside class="sidebar">
         <ul>
           <li @click="setActiveFeature('profile')">My Profile</li>
-          <li @click="setActiveFeature('booking')">Booking Feature</li>
-          <li @click="setActiveFeature('unitSelection')">Unit Selection Feature</li>
+          <li @click="setActiveFeature('booking')">Booking</li>
+          <!-- Policies Management (only visible for Admin and Staff) -->
+          <li v-if="role === 'ADMIN' || role === 'STAFF'" @click="setActiveFeature('policies')">Policies Management</li>
           <!-- Account Management (only visible for Admin and Staff) -->
           <li v-if="role === 'ADMIN' || role === 'STAFF'" @click="setActiveFeature('accountManagement')">Account Management</li>
+          <!-- Booking Management (only visible for Admin and Staff) -->
+          <li v-if="role === 'ADMIN' || role === 'STAFF'" @click="setActiveFeature('bookingManagement')">Booking Management</li>
+          <!-- Permission Management & Reporting Management (only visible for Admin) -->
+          <li v-if="role === 'ADMIN'" @click="setActiveFeature('permissionManagement')">Permission Management</li>
+          <li v-if="role === 'ADMIN'" @click="setActiveFeature('reporting')">Reporting</li>
         </ul>
 
         <!-- Chat History is placed at the bottom -->
         <ul class="chat-history">
+          
           <li>Chat History</li>
-          <ul>
+          <ul class="chat-list">
             <li>Chat 1</li>
             <li>Chat 2</li>
             <li>Chat 3</li>
@@ -80,6 +87,7 @@ export default {
     return {
       userInput: '',
       messages: [],
+      props: ['role'],
     };
   },
   methods: {
@@ -88,10 +96,16 @@ export default {
         this.$router.push('/profile'); // Navigate to My Profile page
       } else if (feature === 'booking') {
         this.$router.push('/booking'); // Navigate to Booking Feature page
-      } else if (feature === 'unitSelection') {
-        this.$router.push('/unit-selection'); // Navigate to Unit Selection Feature page
+      } else if (feature === 'policies' && (this.role === 'ADMIN' || this.role === 'STAFF')) {
+        this.$router.push('/policies'); // Navigate to Policies Feature page
       } else if (feature === 'accountManagement' && (this.role === 'ADMIN' || this.role === 'STAFF')) {
         this.$router.push('/account-management'); // Navigate to Account Management page for Admin/Staff
+      } else if (feature === 'bookingManagement' && (this.role === 'ADMIN' || this.role === 'STAFF')) {
+        this.$router.push('/booking-management'); // Navigate to Booking Management page for Admin/Staff
+      }else if (feature === 'permissionManagement' && (this.role === 'ADMIN')) {
+        this.$router.push('/permission-management'); // Navigate to Permission Management page for Admin
+      } else if (feature === 'reporting' && (this.role === 'ADMIN')) {
+        this.$router.push('/reporting'); // Navigate to Reporting for Admin
       }
       console.log('Selected feature:', feature);
     },
@@ -206,6 +220,16 @@ export default {
 
 .chat-history {
   margin-top: auto; /* This ensures Chat History stays at the bottom */
+}
+
+.chat-list li {
+  padding: 5px;
+  padding-left: 20px;
+  cursor: pointer;
+  background-color: #8f9ead;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  transition: background-color 0.2s;
 }
 
 /* Recommended Questions */

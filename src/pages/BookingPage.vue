@@ -27,9 +27,15 @@
             <label for="date">Choose Date:</label>
             <input type="date" id="date" v-model="newBooking.date" />
             
-            <label for="time">Choose Time:</label>
-            <input type="time" id="time" v-model="newBooking.time" />
+            <label for="time">Start Time:</label>
+            <input type="time" id="time" v-model="newBooking.starttime" />
+
+            <label for="time">End Time:</label>
+            <input type="time" id="time" v-model="newBooking.endtime" />
             
+            <label for="question">Question:</label>
+            <textarea type="question" rows="4" cols="50" id="question" v-model="newBooking.question" placeholder="Enter your inquiry"/>
+
             <button class="booking-btn" @click="confirmBooking">Confirm Booking</button>
           </div>
   
@@ -43,21 +49,25 @@
             </select>
             <button class="delete-btn booking-btn" @click="cancelBooking">Cancel Booking</button>
           </div>
+
         </div>
       </div>
     </div>
   </template>
   
   <script>
-  export default {
+    export default {
+    props: ['role'], // Added 'role' prop for dynamic role-based rendering
+
     data() {
       return {
         activeTab: 'current', // Default to 'Current Bookings' tab
         newBooking: {
           date: '',
-          time: '',
+          starttime: '',
+          endtime: '',
+          question: '',
         },
-        selectedBookingToCancel: '',
       };
     },
     methods: {
@@ -65,7 +75,7 @@
         this.activeTab = tab;
       },
       confirmBooking() {
-        if (!this.newBooking.date || !this.newBooking.time) {
+        if (!this.newBooking.date || !this.newBooking.starttime || !this.newBooking.endtime) {
           alert('Please select both a date and a time for the booking.');
           return;
         }
@@ -140,6 +150,7 @@
     padding: 2rem;
     background-color: #fff;
     position: relative;
+    overflow-y: scroll;
   }
   
   h2 {
@@ -148,9 +159,9 @@
   }
   
   input,
-  select {
+  select, textarea {
     width: 100%;
-    padding: 0.75rem;
+    padding: 0.5rem;
     margin-bottom: 1rem;
     border: 1px solid #ddd;
     border-radius: 6px;
@@ -197,5 +208,25 @@
   .close-button button:hover {
     color: #dc3545;
   }
+
+    /* Table style */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th, td {
+    padding: 10px;
+    text-align: left;
+  }
+  
+  th {
+    background-color: #f2f2f2;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
   </style>
   
